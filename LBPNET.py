@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from sklearn.decomposition import PCA
-from lbp import lbp_descriptor
+from lbp import lbp_descriptor, pca_filter
 
 
 # Define LBPNet architecture with feature extraction in dense grid
@@ -27,8 +26,7 @@ class LBPNet(nn.Module):
     def forward(self, x):
         # Forward pass through dense LBP layers
         desc = self.lbp_descriptor(x)
-        self.pca.fit(desc)
-        desc = self.pca.transform(desc)
+        desc = self.pca_filter(desc)
 
         # Pass features through the network
         x = self.features(torch.tensor(desc).float().cuda())
